@@ -1,0 +1,76 @@
+import { useState } from 'react';
+import { Combobox } from '@headlessui/react';
+
+const Autocomplete = ({ name, id, options = [], onValueChange }) => {
+  const [query, setQuery] = useState(''); // مقدار ورودی کاربر
+  const [selectedOption, setSelectedOption] = useState(null); // گزینه انتخاب شده
+
+  // فیلتر کردن گزینه‌ها بر اساس ورودی کاربر
+  const filteredOptions = query 
+    ? options.filter(option => option.name.toLowerCase().includes(query.toLowerCase())) 
+    : options;
+
+  const handleSelection = (option) => {
+    if (option) {
+      setSelectedOption(option);
+      setQuery(option.name);
+      onValueChange({ id: option.id, name: option.name });
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setQuery(value);
+    setSelectedOption(null);
+    onValueChange({ id: null, name: value || '' });
+  };
+
+  const handleBlur = () => {
+    if (query && !selectedOption) {
+      const newValue = { id: null, name: query };
+      setSelectedOption(newValue);
+      onValueChange(newValue);
+    }
+  };
+
+  return (
+    <Combobox
+      as="div"
+      value={selectedOption}
+      onChange={handleSelection}
+      name={name}
+      id={id}
+      aria-label={name}
+      onBlur={handleBlur}
+    >
+      <div className="relative">
+        <Combobox.Input
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={handleInputChange}
+          displayValue={(option) => option?.name || query}
+          placeholder="Type or select a value"
+          value={query}
+          aria-autocomplete="list"
+          autoComplete="off"
+          aria-invalid={!query && !selectedOption}
+        />
+        <Combobox.Options className="absolute w-full mt-2 bg-white border border-gray-200 rounded-md max-h-40 overflow-y-auto">
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option) => (
+              <Combobox.Option
+                key={option.id} // استفاده از id به عنوان کلید
+                value={option}
+                className={({ active }) => `p-2 cursor-pointer ${active ? 'bg-blue-100' : ''}`}
+                aria-selected={selectedOption?.id === option.id}
+              >
+                {option.name}
+              </Combobox.Option>
+            ))
+          ) : null}
+        </Combobox.Options>
+      </div>
+    </Combobox>
+  );
+};
+
+export default Autocomplete;
