@@ -1,0 +1,33 @@
+import React from 'react';
+import { useState } from 'react';
+import Autocomplete from './Autocomplete'; // Import the component
+
+export function App() {
+  const handleValueChange = value => {
+    setSelectedValue(value);
+  };
+  const [selectedValue, setSelectedValue] = useState(null);
+  console.log(selectedValue);
+  const options = [
+    { id: 1, name: 'Option 1' },
+    { id: 2, name: 'Option 2' },
+    { id: 3, name: 'Option 3' },
+  ];
+  return (
+    <div className='p-4'>
+      <h1 className='text-xl font-bold mb-4'>Autocomplete Example</h1>
+      <Autocomplete
+        name='autocomplete'
+        id='autocomplete-1'
+        options={options}
+        onValueChange={handleValueChange}
+      />
+      {selectedValue && (
+        <div className='mt-4'>
+          Selected Value: {selectedValue.name} (ID:{' '}
+          {selectedValue.id || 'New Value'})
+        </div>
+      )}
+    </div>
+  );
+}
